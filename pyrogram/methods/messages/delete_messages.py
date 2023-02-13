@@ -28,8 +28,10 @@ class DeleteMessages:
         chat_id: Union[int, str],
         message_ids: Union[int, Iterable[int]],
         revoke: bool = True
-    ) -> bool:
+    ) -> int:
         """Delete messages, including service messages.
+
+        .. include:: /_includes/usable-by/users-bots.rst
 
         Parameters:
             chat_id (``int`` | ``str``):
@@ -37,9 +39,8 @@ class DeleteMessages:
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            message_ids (``int`` | ``Iterable[int]``):
-                A list of Message identifiers to delete (integers) or a single message id.
-                Iterators and Generators are also accepted.
+            message_ids (``int`` | Iterable of ``int``):
+                An iterable of message identifiers to delete (integers) or a single message id.
 
             revoke (``bool``, *optional*):
                 Deletes messages on both parts.
@@ -48,7 +49,7 @@ class DeleteMessages:
                 Defaults to True.
 
         Returns:
-            ``bool``: True on success, False otherwise.
+            ``int``: Amount of affected messages
 
         Example:
             .. code-block:: python
@@ -76,10 +77,8 @@ class DeleteMessages:
             r = await self.invoke(
                 raw.functions.messages.DeleteMessages(
                     id=message_ids,
-                    revoke=revoke or None
+                    revoke=revoke
                 )
             )
 
-        # Deleting messages you don't have right onto, won't raise any error.
-        # Check for pts_count, which is 0 in case deletes fail.
-        return bool(r.pts_count)
+        return r.pts_count
